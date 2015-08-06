@@ -18,6 +18,7 @@ public class SpinnerLoader extends View {
 
     private static final int POINTS_COUNT = 9;
     private static final int STEP = 3;
+    private static final int BIG_STEP = 1;
     private static final int DEFAULT_COLOR = Color.rgb(87, 247, 250);
     private static final float DEFAULT_RADUIS = 180;
     private static final float DEFAULT_CIRCLE_RADUIS = 40;
@@ -47,16 +48,19 @@ public class SpinnerLoader extends View {
     private static final String ENDY2 = "endY2";
     private static final String CONTROLX1 = "controlX1";
     private static final String CONTROLY1 = "controlY1";
+    private static final String BIGSTEP = "bigStep";
 
     private CirclePoint[] circlePoints = new CirclePoint[POINTS_COUNT];
 
     private int angle = 0;
+    private int bigStep = BIG_STEP;
     float bigCircleCenterX;
     float bigCircleCenterY;
     float raduis;
     float circleRaduis;
     float moveRaduis;
     int pointColor;
+
 
     private float startX1;
     private float startY1;
@@ -91,6 +95,8 @@ public class SpinnerLoader extends View {
         final TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.SpinnerLoader,
                 defStyleAttr, 0);
         pointColor = attributes.getColor(R.styleable.SpinnerLoader_point_color, DEFAULT_COLOR);
+        boolean isdynamic = attributes.getBoolean(R.styleable.SpinnerLoader_isdynamic, true);
+        isDynamic(isdynamic);
         attributes.recycle();
     }
 
@@ -128,6 +134,9 @@ public class SpinnerLoader extends View {
         }
         for (int i = 0; i < POINTS_COUNT - 1; i ++) {
             CirclePoint p = circlePoints[i];
+            p.x = getPaddingLeft() + bigCircleCenterX + (float)Math.cos(Math.toRadians(p.currentAngle)) * raduis;
+            p.y = getPaddingTop() + bigCircleCenterY + (float)Math.sin(Math.toRadians(p.currentAngle)) * raduis;
+            p.currentAngle = p.currentAngle + bigStep;
             canvas.drawCircle(p.x, p.y, p.raduis, circlePaint);
         }
         calculateMoveingPoint(canvas);
@@ -200,8 +209,9 @@ public class SpinnerLoader extends View {
     protected void initializePoints() {
         for (int i = 0; i < POINTS_COUNT; i++) {
             CirclePoint p = new CirclePoint();
-            p.x = getPaddingLeft() + bigCircleCenterX + (float)Math.cos(Math.toRadians(SPLIT_ANGLE * i)) * raduis;
-            p.y = getPaddingTop() + bigCircleCenterY + (float)Math.sin(Math.toRadians(SPLIT_ANGLE * i)) * raduis;
+            p.currentAngle = SPLIT_ANGLE * i;
+            p.x = getPaddingLeft() + bigCircleCenterX + (float)Math.cos(Math.toRadians(p.currentAngle)) * raduis;
+            p.y = getPaddingTop() + bigCircleCenterY + (float)Math.sin(Math.toRadians(p.currentAngle)) * raduis;
             p.color = pointColor;
             p.raduis = circleRaduis;
             if (i == POINTS_COUNT - 1) {
@@ -249,6 +259,14 @@ public class SpinnerLoader extends View {
 
     }
 
+    public void isDynamic(boolean dynamic) {
+        if (dynamic) {
+            bigStep = BIG_STEP;
+        } else {
+            bigStep = 0;
+        }
+    }
+
     protected float dp2px(float dp) {
         final float scale = getResources().getDisplayMetrics().density;
         return  dp * scale + 0.5f;
@@ -275,6 +293,7 @@ public class SpinnerLoader extends View {
         bundle.putFloat(CONTROLX1, controlX1);
         bundle.putFloat(CONTROLY1, controlY1);
         bundle.putInt(POINTCOLOR, pointColor);
+        bundle.putInt(BIGSTEP, bigStep);
         return bundle;
     }
 
@@ -299,6 +318,7 @@ public class SpinnerLoader extends View {
             controlX1 = bundle.getFloat(CONTROLX1);
             controlY1 = bundle.getFloat(CONTROLY1);
             pointColor = bundle.getInt(POINTCOLOR);
+            bigStep = bundle.getInt(BIGSTEP);
             init();
             super.onRestoreInstanceState(bundle.getParcelable(INSTANCE_STATE));
             return;
@@ -307,6 +327,7 @@ public class SpinnerLoader extends View {
     }
 
     static class CirclePoint {
+        public int currentAngle;
         public float raduis;
         public float x;
         public float y;

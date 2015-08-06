@@ -10,6 +10,7 @@
         android:layout_marginTop="30dp"
         android:layout_centerHorizontal="true"
         app:point_color="@color/accent_material_dark"
+        app:isdynamic="false"
         android:layout_width="40dp"
         android:layout_height="40dp"/>
 

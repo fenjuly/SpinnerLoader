@@ -2,6 +2,7 @@
 <resources>
     <declare-styleable name="SpinnerLoader">
         <attr name="point_color" format="color"/>
+        <attr name="isdynamic" format="boolean"/>
     </declare-styleable>
 
 </resources>
