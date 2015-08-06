@@ -22,6 +22,9 @@ public class SpinnerLoader extends View {
     private static final float DEFAULT_RADUIS = 180;
     private static final float DEFAULT_CIRCLE_RADUIS = 40;
     private static final float DEAFULT_MOVE_RADUIS = 30;
+    private static final int SPLIT_ANGLE = 45;
+    private static final int ADDITION_LENGTH = 6;
+    private static final int FLAT_ANGLE = 180;
 
     /**
      * for save and restore instance of view.
@@ -127,6 +130,29 @@ public class SpinnerLoader extends View {
             CirclePoint p = circlePoints[i];
             canvas.drawCircle(p.x, p.y, p.raduis, circlePaint);
         }
+        calculateMoveingPoint(canvas);
+        angle = angle + STEP;
+        invalidate();
+    }
+
+    protected void init() {
+        float temp = getHeight() > getWidth() ? getWidth() / 2 : getHeight() / 2;
+        raduis = temp - temp / DEFAULT_RADUIS * DEFAULT_CIRCLE_RADUIS;
+        circleRaduis = DEFAULT_CIRCLE_RADUIS / DEFAULT_RADUIS * raduis;
+        moveRaduis = DEAFULT_MOVE_RADUIS / DEFAULT_RADUIS * raduis;
+        bigCircleCenterX = getPaddingLeft() + getWidth() / 2;
+        bigCircleCenterY = getPaddingTop() + getHeight() / 2;
+
+        path1 = new Path();
+        initializePaints();
+        initializePoints();
+    }
+
+    /**
+     * 计算动态的点
+     * @param canvas
+     */
+    protected void calculateMoveingPoint(Canvas canvas) {
         CirclePoint p = circlePoints[POINTS_COUNT - 1];
         p.x = bigCircleCenterX + (float)Math.cos(Math.toRadians(angle)) * raduis;
         p.y = bigCircleCenterY + (float)Math.sin(Math.toRadians(angle)) * raduis;
@@ -136,7 +162,7 @@ public class SpinnerLoader extends View {
 
             //是否相交
             if (isIntersect(p, biggerP1)) {
-                canvas.drawCircle(biggerP1.x, biggerP1.y, biggerP1.raduis + 6*(1-getDistanceRatio(p, biggerP1)), circlePaint);
+                canvas.drawCircle(biggerP1.x, biggerP1.y, biggerP1.raduis + ADDITION_LENGTH*(1-getDistanceRatio(p, biggerP1)), circlePaint);
             }
 
             if (isConnect(p, biggerP1)) {
@@ -169,30 +195,13 @@ public class SpinnerLoader extends View {
                 canvas.drawPath(path1, linePaint);
             }
         }
-
-        angle = angle + STEP;
-        invalidate();
     }
-
-    protected void init() {
-        float temp = getHeight() > getWidth() ? getWidth() / 2 : getHeight() / 2;
-        raduis = temp - temp / DEFAULT_RADUIS * DEFAULT_CIRCLE_RADUIS;
-        circleRaduis = DEFAULT_CIRCLE_RADUIS / DEFAULT_RADUIS * raduis;
-        moveRaduis = DEAFULT_MOVE_RADUIS / DEFAULT_RADUIS * raduis;
-        bigCircleCenterX = getPaddingLeft() + getWidth() / 2;
-        bigCircleCenterY = getPaddingTop() + getHeight() / 2;
-
-        path1 = new Path();
-        initializePaints();
-        initializePoints();
-    }
-
 
     protected void initializePoints() {
         for (int i = 0; i < POINTS_COUNT; i++) {
             CirclePoint p = new CirclePoint();
-            p.x = getPaddingLeft() + bigCircleCenterX + (float)Math.cos(Math.toRadians(45 * i)) * raduis;
-            p.y = getPaddingTop() + bigCircleCenterY + (float)Math.sin(Math.toRadians(45 * i)) * raduis;
+            p.x = getPaddingLeft() + bigCircleCenterX + (float)Math.cos(Math.toRadians(SPLIT_ANGLE * i)) * raduis;
+            p.y = getPaddingTop() + bigCircleCenterY + (float)Math.sin(Math.toRadians(SPLIT_ANGLE * i)) * raduis;
             p.color = pointColor;
             p.raduis = circleRaduis;
             if (i == POINTS_COUNT - 1) {
@@ -221,12 +230,23 @@ public class SpinnerLoader extends View {
 
     private boolean isConnect(CirclePoint a, CirclePoint b) {
         float distance = (float)Math.sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
-        return distance < raduis * Math.cos(Math.toRadians(62.5));
+        return distance < raduis * Math.cos(Math.toRadians((FLAT_ANGLE - SPLIT_ANGLE) / 2));
     }
 
     private float getDistanceRatio(CirclePoint a, CirclePoint b) {
         float distance = (float)Math.sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
         return distance / (a.raduis + b.raduis);
+    }
+
+    public void setPointcolor(int color) {
+        pointColor = color;
+        if (linePaint != null) {
+            linePaint.setColor(color);
+        }
+        if (circlePaint != null) {
+            circlePaint.setColor(color);
+        }
+
     }
 
     protected float dp2px(float dp) {
