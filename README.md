@@ -23,5 +23,5 @@ and one method `public void setPointcolor(int color)`
 setPointcolor(color);
 ```
 
-###Other
-All rights `unreserved`!
+###License
+License under MIT
