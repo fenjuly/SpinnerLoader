@@ -24,4 +24,4 @@ setPointcolor(color);
 ```
 
 ###License
-License under MIT
+License under [MIT](https://github.com/fenjuly/SpinnerLoader/raw/master/LICENSE)
