@@ -6,7 +6,7 @@ This is an implemention of [http://t.co/sUuYTeKOzp](http://t.co/sUuYTeKOzp)
 
 ![SpinnerLoader](http://i.imgur.com/qFNRkHM.gif)
 
-###Usage
+### Usage
 only one attribute `point_color`
 
 ```xml
@@ -25,7 +25,7 @@ and one method `public void setPointcolor(int color)`
 setPointcolor(color);
 ```
 
-###Get into your build
+### Get into your build
 ```gradle
 repositories {
     maven {
@@ -38,5 +38,5 @@ dependencies {
 }
 ```
 
-###License
+### License
 License under [MIT](https://github.com/fenjuly/SpinnerLoader/raw/master/LICENSE)
